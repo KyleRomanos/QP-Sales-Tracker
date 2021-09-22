@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="chance.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asphalt calculator</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style>
+        body{
+            margin-top: 30px;
+            background: rgb(83, 83, 105);
+            color: rgb(245, 140, 80);
+        }
+
+        #output {
+            color: rgb(64, 218, 64);
+        }
+    </style>
+  </head>
+  <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1 class="display-5 text-center">Asphalt Calculator</h1>
+                    <form id = "calculationForm">
+                            <div class="form-group">
+                                <label for="asphaltSquareFeet">Square Feet</label>
+                                <input 
+                                id="asphaltSquareFeet"
+                                type="number"
+                                class="form-control" 
+                                placeholder="Enter Sq. Feet based on field measurements...">
+
+                              </div>
+
+                              <div id="output">
+                                <div class="card card-primary mb-2">
+                                <div class="card-block">
+                                    <h4><b>Sq. Meters:</b> </h4>
+                                    <h5><b><div id="squareMetersOutput"></div></b></h5>
+                                </div>
+                                </div>
+                                </div>
+                              <form>
+                                <div class="form-group">
+                                    <label for="asphaltHeight">Asphalt Height (mm)</label>
+                                  <input
+                                  id="asphaltHeight"
+                                  type="number"
+                                  class="form-control form-control-lg"
+                                  placeholder="Enter asphalt height in millimeters...">
+                                </div>
+                            </form>
+                            <form>
+                                <div class="form-group">
+                                    <label for="asphaltMetersSquared">Meters Squared</label>
+                                    <input 
+                                    id="asphaltMetersSquared"
+                                    type="number" 
+                                    class="form-control form-control-lg" 
+                                    placeholder="Meters Squared based on measurements...">
+                                    
+                                </div>
+                                <div id="output">
+                                    <div class="card card-primary mb-2">
+                                    <div class="card-block">
+                                        <h4><b>Tonnes:</b> </h4>
+                                        <h4><b><div id="tonnesOutput"></div></b></h4>
+                                    </div>
+                                    </div>
+                                    <button type="submit">Submit</button>
+                                 
+                                    
+                              <div id="container">
+                                <ul id="list"></ul>
+                              </div>
+                                    </div>
+<!--  
+                                    <button type="submit">Submit</button>
+                                    <button type="clear">Clear</button> -->
+                                </form>
+                                </div>
+
+                              </form>
+<!-- 
+                              <div id="container">
+                                <ul id="list"></ul>
+                              </div> -->
+                        </div>
+                    </form>
+                    <div class="col-lg-12">
+                      <div id="projectsList">
+                      </div>
+                    </div>
+                </div>
+            </div>
+      
+            <script>
+
+function generateSquareMetersOutput(squaredFeet) {
+  const inputValueSquareFeet = document.getElementById('asphaltSquareFeet').value
+ 
+  
+      return inputValueSquareFeet / 10.76
+  } 
+
+
+function generateTonnesOutput(height, squaredMeters) {
+                const inputValueMetersSquared = document.getElementById('asphaltMetersSquared').value
+                const inputValueAsphaltHeight = document.getElementById('asphaltHeight').value
+                if (height && inputValueMetersSquared) {
+                  return parseFloat(0.000246).toPrecision(3) * height * 10 * inputValueMetersSquared
+                } else if (squaredMeters && inputValueAsphaltHeight) {
+                  return parseFloat(0.000246).toPrecision(3) * squaredMeters * inputValueAsphaltHeight * 10
+                } else {
+                  return null
+                }
+              }
+
+
+                document.getElementById('asphaltHeight').addEventListener('input', function(e){
+                   document.getElementById('tonnesOutput').innerHTML = generateTonnesOutput(e.target.value, null)
+                });
+
+                document.getElementById('asphaltMetersSquared').addEventListener('input', function(e) {
+                   document.getElementById('tonnesOutput').innerHTML = generateTonnesOutput(null, e.target.value)
+                })
+
+               
+
+                document.getElementById('asphaltSquareFeet').addEventListener('input', function(e) {
+                   document.getElementById('squareMetersOutput').innerHTML = generateSquareMetersOutput(null, e.target.value)
+                })
+
+                document.querySelector('button').addEventListener('click', function(e) {
+  let form = document.querySelector('form'),
+      list = document.getElementById('list');
+  
+  list.innerHTML = [].map.call(form.querySelectorAll('input'), function(el) {
+    return '<li>' + el.value + '</li>';
+  }).join('');
+});
+
+document.getElementById('calculationForm').addEventListener('submit', saveCalculation);
+
+function saveCalculation(e) {
+  let tonnesOutputCalculation = document.getElementById('tonnesOutput')
+  let calculationStatus = 'Open';
+
+  const calculate = {
+    tonnage: tonnesOutputCalculation,
+    id: projectId,
+    status: calculationStatus
+  }
+
+  if (localStorage.getItem('calculations') == null) {
+    let calculations = []
+    calculations.push(calculation);
+    localStorage.setItem('calculations', JSON.stringify(calculations));
+  } else {
+    let calculations = JSON.parse(localStorage.getItem('calculations'));
+    calculations.push(calculation);
+    localStorage.setItem('calculations', JSON.stringify(calculations))
+  }
+
+  document.getElementById('calculationForm').reset();
+  fetchProjects();
+  e.preventDefault();
+}
+
+function setStatusClosed(id) {
+  let projects = JSON.parse(localStorage.getItem('calculations'));
+
+  for (let i = 0; i < calculations.length; i++) {
+    if (calculations[i].id == id) {
+      calculations[i].status = 'Closed';
+    }
+  }
+
+  localStorage.setItem('calculations', JSON.stringify(calculations));
+
+  fetchCalculations();
+}
+
+function deleteCalculation(id) {
+  let calculations = JSON.parse(localStorage.getItem('calculations'));
+
+  for (let i = 0; i < calculations.length; i++) {
+    if (calculations[i].id == id) {
+      calculations.splice(i, 1);
+    }
+  }
+
+  localStorage.setItem('calculations', JSON.stringify(calculations));
+
+  fetchCalculations();
+}
+
+function fetchCalculations(id) {
+  let calculations = JSON.parse(localStorage.getItem('calculations'));
+  let calculationsList = document.getElementById('calculationsList');
+
+  projectsList.innerHTML = '';
+
+  for (let i = 0; i < calculations.length; i++) {
+    let id = calculations[i].id;
+    let status = calculations[i].status;
+
+  
+
+
+    calculationsList.innerHTML +=   '<div class="well">'+
+                              '<h6>Project ID: ' + id + '</h6>'+
+                              '<p><span class="label label-info">' + status + '</span></p>'+
+                              '<h3>' + desc + '</h3>'+
+
+                              '<p><span class="glyphicon glyphicon-file"></span> ' + assignedTo + year + severity + '</p>'+
+                              '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-success">Complete</a> '+
+                              '<a href="#" onclick="deleteProject(\''+id+'\')" class="btn btn-danger">Delete</a> '+
+                              '<a href="javascript: onclick(submitAlert())" class="btn btn-warning">Submit</a>'+
+                              '</div>';
+  }
+}
+
+            </script>
+
+  </body>
+</html>
